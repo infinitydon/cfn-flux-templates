@@ -7,9 +7,12 @@ Parameters:
     Type: "AWS::EC2::VPC::Id"
     Description: The VPC of the worker instances
   MultusSubnets:
+    Type: "List<AWS::EC2::Subnet::Id>"
+    Description: Subnets To Use In Creating Secondary ENIs
+  SourceDestCheckEnable:
     Type: String
-    Default: ""
-    Description: Subnets To Use In Creating Secondary ENIs  
+    Description: Enable or Disable src-dst checking
+    Default: "true"  
   useIPsFromStartOfSubnet: 
     AllowedValues: 
        -  true
@@ -32,7 +35,6 @@ Parameters:
     Description: Specify S3 Key(filename) of your Lambda Function (Attach2ndENI)
     Default: "lambda_function.zip"
 
-Transform: AWS::Serverless-2016-10-31
 Resources:
   MultusSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
@@ -135,6 +137,7 @@ Resources:
           SecGroupIds: !Ref MultusSecurityGroup
           useStaticIPs: !Ref useIPsFromStartOfSubnet
           ENITags: !Ref InterfaceTags
+          SourceDestCheckEnable: !Ref SourceDestCheckEnable
 # End of Lambda
 
 # CloudWatch Event Trigger
